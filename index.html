@@ -674,10 +674,22 @@
             }
         }
 
+        // Configuration - You can set this via environment variables or config file
+        const CONFIG = {
+            OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || 'YOUR_API_KEY_HERE',
+            OPENROUTER_MODEL: process.env.OPENROUTER_MODEL || 'qwen/qwen-2.5-72b-instruct:free'
+        };
+
         async function sendAIMessage() {
             const input = document.getElementById('aiUserInput');
             const button = document.getElementById('aiSendButton');
             const message = input.value.trim();
+            
+            // Check if API key is configured
+            if (CONFIG.OPENROUTER_API_KEY === 'YOUR_API_KEY_HERE') {
+                addAIMessage('⚠️ API key not configured. Please set up your OpenRouter API key to use this feature.');
+                return;
+            }
             
             if (message) {
                 addAIMessage(message, true);
@@ -690,11 +702,11 @@
                     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                         method: 'POST',
                         headers: {
-                            'Authorization': 'Bearer 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',
+                            'Authorization': `Bearer ${CONFIG.OPENROUTER_API_KEY}`,
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            model: 'qwen/qwen-2.5-72b-instruct:free',
+                            model: CONFIG.OPENROUTER_MODEL,
                             messages: [
                                 {
                                     role: 'system',
